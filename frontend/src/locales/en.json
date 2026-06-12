@@ -172,6 +172,8 @@
   },
   "control": {
     "climate": "Climate control",
+    "climateStart": "Start climate",
+    "climateStop": "Stop climate",
     "seat": {
       "off": "Off",
       "low": "Low",

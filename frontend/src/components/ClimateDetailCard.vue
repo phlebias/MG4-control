@@ -33,7 +33,7 @@ const seatLabels = computed(() => [
   t('control.seat.high'),
 ])
 
-const localClimateOn = ref<boolean | null>(props.climateOn)
+const localClimateOn = ref<boolean | null>(null)
 const localRearDefroster = ref<boolean | null>(props.rearWindowDefroster)
 const localSteeringWheel = ref<boolean | null>(props.steeringWheelHeating ?? false)
 const sliderTemp = ref<number>(props.remoteTemperature ?? 22)
@@ -42,7 +42,6 @@ const seatRightLocal = ref<number>(props.heatedSeatFrontRight ?? 0)
 
 watch(modalOpen, (open) => {
   if (open) {
-    localClimateOn.value = props.climateOn
     localRearDefroster.value = props.rearWindowDefroster
     localSteeringWheel.value = props.steeringWheelHeating ?? false
     sliderTemp.value = props.remoteTemperature ?? 22
@@ -51,25 +50,22 @@ watch(modalOpen, (open) => {
   }
 })
 
+watch(
+  () => props.climateOn,
+  () => {
+    localClimateOn.value = null
+  },
+)
+
+const effectiveClimateOn = computed(() => localClimateOn.value ?? props.climateOn)
+
 const summaryValue = computed((): string | null => {
   const parts: string[] = []
-  if (props.climateOn !== null)
-    parts.push(props.climateOn ? t('vehicle.climateOn') : t('vehicle.climateOff'))
+  if (effectiveClimateOn.value !== null)
+    parts.push(effectiveClimateOn.value ? t('vehicle.climateOn') : t('vehicle.climateOff'))
   if (props.interiorTemperature !== null) parts.push(`${props.interiorTemperature.toFixed(1)}°C`)
   return parts.length ? parts.join(' · ') : null
 })
-
-const hasAnyData = computed(
-  () =>
-    props.climateOn !== null ||
-    props.remoteTemperature !== null ||
-    props.interiorTemperature !== null ||
-    props.exteriorTemperature !== null ||
-    props.heatedSeatFrontLeft !== null ||
-    props.heatedSeatFrontRight !== null ||
-    props.rearWindowDefroster !== null ||
-    props.steeringWheelHeating !== null,
-)
 
 const commandKeys = [
   'climate',
@@ -84,7 +80,6 @@ const anyPending = computed(() => commandKeys.some((k) => isPending(k)))
 const isApplying = computed(() => anyPending.value || commandKeys.some((k) => sending.value === k))
 
 const hasPendingChanges = computed(() => {
-  if (props.climateOn !== null && localClimateOn.value !== props.climateOn) return true
   if (props.rearWindowDefroster !== null && localRearDefroster.value !== props.rearWindowDefroster)
     return true
   if (
@@ -110,10 +105,6 @@ async function applyAll() {
     sliderTemp.value !== (props.remoteTemperature ?? 22)
   ) {
     await send(props.vin, 'climate-temperature', String(sliderTemp.value))
-  }
-  if (props.climateOn !== null && localClimateOn.value !== props.climateOn) {
-    const target = localClimateOn.value
-    await send(props.vin, 'climate', target ? 'on' : 'off', (s) => s.climateOn === target)
   }
   if (
     props.rearWindowDefroster !== null &&
@@ -147,6 +138,15 @@ async function applyAll() {
   }
 }
 
+async function toggleClimate() {
+  const target = effectiveClimateOn.value !== true
+  if (
+    await send(props.vin, 'climate', target ? 'on' : 'off', (s) => s.climateOn === target)
+  ) {
+    localClimateOn.value = target
+  }
+}
+
 function onSeatLeftChange(e: Event) {
   seatLeftLocal.value = Number((e.target as HTMLInputElement).value)
 }
@@ -158,11 +158,10 @@ function onSeatRightChange(e: Event) {
 
 <template>
   <StatusCard
-    v-if="hasAnyData"
     icon="wind"
     :label="t('control.climate')"
     :value="summaryValue"
-    :variant="climateOn ? 'info' : undefined"
+    :variant="effectiveClimateOn ? 'info' : undefined"
     clickable
     @click="openModal"
   />
@@ -195,20 +194,33 @@ function onSeatRightChange(e: Event) {
         </div>
       </div>
 
-      <!-- Climate on/off toggle -->
-      <div v-if="climateOn !== null" class="detail-list__item detail-list__item--control">
+      <!-- Climate start/stop -->
+      <div class="detail-list__item detail-list__item--control">
         <font-awesome-icon icon="wind" class="detail-list__item-icon" />
         <span class="detail-list__item-label">{{ t('control.climate') }}</span>
-        <div class="form-check form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            :checked="localClimateOn ?? false"
-            :disabled="isApplying || !vin"
-            @change="localClimateOn = !localClimateOn"
-          />
-        </div>
+        <button
+          class="btn btn-sm"
+          :class="
+            isPending('climate')
+              ? 'btn--pending btn-outline-secondary'
+              : effectiveClimateOn
+                ? 'btn-outline-danger'
+                : 'btn-primary'
+          "
+          :disabled="sending === 'climate' || isPending('climate') || !vin"
+          @click="toggleClimate"
+        >
+          <font-awesome-icon v-if="sending === 'climate'" icon="spinner" spin />
+          <font-awesome-icon v-else-if="isPending('climate')" icon="clock" />
+          <font-awesome-icon v-else :icon="effectiveClimateOn ? 'stop' : 'play'" />
+          {{
+            isPending('climate')
+              ? t('control.pending')
+              : effectiveClimateOn
+                ? t('control.climateStop')
+                : t('control.climateStart')
+          }}
+        </button>
       </div>
 
       <!-- Rear defroster toggle -->

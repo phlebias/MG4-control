@@ -106,6 +106,8 @@ import {
   faFlask,
   faGripLines,
   faLifeRing,
+  faPlay,
+  faStop,
 } from '@fortawesome/free-solid-svg-icons'
 
 import App from './App.vue'
@@ -189,6 +191,8 @@ library.add(
   faFlask,
   faGripLines,
   faLifeRing,
+  faPlay,
+  faStop,
 )
 
 const i18n = createI18n({
