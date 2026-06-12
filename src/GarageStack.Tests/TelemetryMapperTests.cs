@@ -539,6 +539,16 @@ public class TelemetryMapperTests
         Assert.Equal(new DateTime(2024, 5, 15, 8, 30, 0, DateTimeKind.Utc), snapshot.LastChargeStateAt);
     }
 
+    [Fact]
+    public void ApplyMessage_RefreshTimestampWithOffset_NormalizesToUtc()
+    {
+        var snapshot = new TelemetrySnapshot();
+        TelemetryMapper.ApplyMessage(snapshot, "refresh/lastVehicleState", "2024-06-01T13:00:00+01:00");
+
+        Assert.Equal(new DateTime(2024, 6, 1, 12, 0, 0, DateTimeKind.Utc), snapshot.LastVehicleStateAt);
+        Assert.Equal(DateTimeKind.Utc, snapshot.LastVehicleStateAt!.Value.Kind);
+    }
+
     // ── Active journey ────────────────────────────────────────────────────────
 
     [Fact]

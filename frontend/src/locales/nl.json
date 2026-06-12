@@ -166,6 +166,8 @@
   },
   "control": {
     "climate": "Klimaatbeheersing",
+    "climateStart": "Klimaat starten",
+    "climateStop": "Klimaat stoppen",
     "seat": {
       "off": "Uit",
       "low": "Laag",
