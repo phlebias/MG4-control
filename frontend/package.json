@@ -42,7 +42,7 @@
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^28.0.3",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.3",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/eslint-plugin": "^1.6.19",
     "@vue/eslint-config-typescript": "^14.8.0",
@@ -61,7 +61,7 @@
     "vite": "^8.0.16",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vitest": "^4.1.8",
-    "vue-tsc": "^3.3.4"
+    "vue-tsc": "^3.3.5"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
