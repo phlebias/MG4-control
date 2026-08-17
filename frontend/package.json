@@ -40,7 +40,7 @@
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "@tsconfig/node24": "^24.0.4",
-    "@types/jsdom": "^28.0.3",
+    "@types/jsdom": "^30.0.0",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.9.2",
     "@vitejs/plugin-vue": "^6.0.7",
@@ -53,14 +53,14 @@
     "eslint-plugin-oxlint": "~1.68.0",
     "eslint-plugin-vue": "~10.9.2",
     "jiti": "^2.7.0",
-    "jsdom": "^29.1.1",
-    "npm-run-all2": "^9.0.1",
+    "jsdom": "^30.0.1",
+    "npm-run-all2": "^9.0.3",
     "oxlint": "~1.68.0",
     "prettier": "3.8.3",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
     "vite-plugin-vue-devtools": "^8.1.2",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.3.4"
   },
   "engines": {
