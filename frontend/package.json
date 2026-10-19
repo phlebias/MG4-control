@@ -22,7 +22,7 @@
     "@microsoft/signalr": "^10.0.0",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "chart.js": "^4.5.1",
-    "flag-icons": "^7.5.0",
+    "flag-icons": "^7.6.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "pinia": "^3.0.4",
